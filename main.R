@@ -12,3 +12,4 @@ colnames(data)[colnames(data) == "Dew.point.temperature.캜."] <- "Dew.point.tem
 data <- data[data$Functioning.Day != "No", ]
 View(data)
 str(data)
+#thanks for the tutorial Yigit but does this actually work
