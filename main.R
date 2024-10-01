@@ -1,6 +1,5 @@
-# MPM02_Project
-HSLU Applied Machine Learning and Predictive Modeling 1 Group Project
-data <- read.csv("C:/Users/Lenovo/Downloads/machine learning/MLproject/SeoulBikeData.csv", fileEncoding = "CP949")
+
+data <- read.csv("SeoulBikeData.csv", fileEncoding = "CP949")
 library(ggplot2)
 head(data)
 str(data)
