@@ -20,11 +20,12 @@ colnames(data)[colnames(data) == "Snowfall..cm."] <- "Snowfall"
 # Removing non-functioning days
 data <- data[data$Functioning.Day != "No", ]
 
+# Adding Weekdays and weekend label
 data <- data %>% 
   mutate(
-    Date = as.Date(Date, format = "%d/%m/%Y"),
-    Weekday = weekdays(Date),
-    Is.Weekend = ifelse(Weekday %in% c("Saturday", "Sunday"), "Yes", "No")
+    Date = as.Date(Date, format = "%d/%m/%Y"), # Changing Date format from character to date
+    Weekday = weekdays(Date),  # Adding column with weekday
+    Is.Weekend = ifelse(Weekday %in% c("Saturday", "Sunday"), "Yes", "No") # Determining whether a weekday is weekend
   )
 
 View(data)
