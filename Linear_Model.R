@@ -1,8 +1,6 @@
 library(dplyr)
 library(ggplot2)
 
-data <- read.csv("C:/Users/Lenovo/Downloads/machine learning/MLproject/SeoulBikeData.csv", fileEncoding = "CP949")
-
 
 # Changing the column names
 colnames(data)[colnames(data) == "Temperature.캜."] <- "Temperature"
