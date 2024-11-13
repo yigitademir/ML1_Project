@@ -1,7 +1,7 @@
 library(dplyr)
 library(ggplot2)
 
-setwd("/Users/kasperr14/Desktop/Wszystko/1. HSLU Data Science/Semester 2/Applied Machine Learning and Predictive Modelling/Project")
+# setwd("/Users/kasperr14/Desktop/Wszystko/1. HSLU Data Science/Semester 2/Applied Machine Learning and Predictive Modelling/Project")
 
 # -----------------------------------------------------------------------------
 # Common Part
