@@ -30,6 +30,31 @@ data <- data %>%
     Is.Weekend = ifelse(Weekday %in% c("Saturday", "Sunday"), "Yes", "No") # Determining whether a weekday is weekend
   )
 
+#Adding Month Column
+data$Month <- month(data$Date, label = TRUE, abbr = TRUE)
+
+#Adding TimeofDay Column
+data <- data %>%
+  mutate(
+    TimeOfDay = case_when(
+      Hour >= 23 | Hour < 2 ~ "Early Night",
+      Hour >= 2 & Hour < 7 ~ "Late Night",
+      Hour >= 7 & Hour < 10 ~ "Morning Rush Hour",
+      Hour >= 10 & Hour < 14 ~ "Mid-day",
+      Hour >= 14 & Hour < 18 ~ "Afternoon",
+      Hour >= 18 & Hour < 20 ~ "Evening Rush Hour",
+      Hour >= 20 & Hour <= 22 ~ "Evening"
+    )
+  )
+
+#Change datatypes for factor variables
+data$Seasons <- as.factor(data$Seasons)
+data$Holiday <- as.factor(data$Holiday)
+data$Is.Weekend <- as.factor(data$Is.Weekend)
+data$Weekday <- as.factor(data$Weekday)
+data$TimeOfDay <- as.factor(data$TimeOfDay)
+data$Hour <- as.factor(data$Hour)
+
 View(data)
 
 # -----------------------------------------------------------------------------

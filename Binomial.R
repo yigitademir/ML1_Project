@@ -1,11 +1,10 @@
 library(dplyr)
 library(ggplot2)
+library(lubridate)
+library(gridExtra)
 
 
 data <- read.csv("SeoulBikeData.csv", fileEncoding = "CP949")
-
-data$Seasons <- as.factor(data$Seasons)
-data$Holiday <- as.factor(data$Holiday)
 
 # Changing the column names
 colnames(data)[colnames(data) == "Temperature.캜."] <- "Temperature"
@@ -28,7 +27,30 @@ data <- data %>%
     Is.Weekend = ifelse(Weekday %in% c("Saturday", "Sunday"), "Yes", "No") # Determining whether a weekday is weekend
   )
 
+#Adding Month Column
+data$Month <- month(data$Date, label = TRUE, abbr = TRUE)
+
+#Adding TimeofDay Column
+data <- data %>%
+    mutate(
+    TimeOfDay = case_when(
+      Hour >= 23 | Hour < 2 ~ "Early Night",
+      Hour >= 2 & Hour < 7 ~ "Late Night",
+      Hour >= 7 & Hour < 10 ~ "Morning Rush Hour",
+      Hour >= 10 & Hour < 14 ~ "Mid-day",
+      Hour >= 14 & Hour < 18 ~ "Afternoon",
+      Hour >= 18 & Hour < 20 ~ "Evening Rush Hour",
+      Hour >= 20 & Hour <= 22 ~ "Evening"
+    )
+  )
+
+#Change datatypes for factor variables
+data$Seasons <- as.factor(data$Seasons)
+data$Holiday <- as.factor(data$Holiday)
 data$Is.Weekend <- as.factor(data$Is.Weekend)
+data$Weekday <- as.factor(data$Weekday)
+data$TimeOfDay <- as.factor(data$TimeOfDay)
+data$Hour <- as.factor(data$Hour)
 
 str(data)
 
@@ -77,6 +99,74 @@ ggplot(data_prop, aes(x = Is.Weekend, y = prop, fill = High.Rentals)) +
   scale_y_continuous(labels = scales::percent) +
   theme_minimal()
 
+# Calculate proportions for each combination of Is.Weekend and High.Rentals
+data_prop <- data %>%
+  group_by(Weekday, High.Rentals) %>%
+  summarise(count = n()) %>%
+  mutate(prop = count / sum(count)) %>%
+  ungroup()
+
+# Plot with percentages displayed on the bars
+ggplot(data_prop, aes(x = Weekday, y = prop, fill = High.Rentals)) +
+  geom_bar(stat = "identity", position = "fill") +
+  geom_text(aes(label = scales::percent(prop, accuracy = 1)), 
+            position = position_fill(vjust = 0.5), size = 3) +
+  labs(title = "Proportion of High Rentals by Weekday", x = "Weekday", y = "Proportion", fill = "High Rentals") +
+  scale_fill_discrete(labels = c("No", "Yes")) +
+  scale_y_continuous(labels = scales::percent) +
+  theme_minimal()
+
+# Calculate proportions for each combination of Is.Weekend and High.Rentals
+data_prop <- data %>%
+  group_by(Month, High.Rentals) %>%
+  summarise(count = n()) %>%
+  mutate(prop = count / sum(count)) %>%
+  ungroup()
+
+# Plot with percentages displayed on the bars
+ggplot(data_prop, aes(x = Month, y = prop, fill = High.Rentals)) +
+  geom_bar(stat = "identity", position = "fill") +
+  geom_text(aes(label = scales::percent(prop, accuracy = 1)), 
+            position = position_fill(vjust = 0.5), size = 3) +
+  labs(title = "Proportion of High Rentals by Months", x = "Months", y = "Proportion", fill = "High Rentals") +
+  scale_fill_discrete(labels = c("No", "Yes")) +
+  scale_y_continuous(labels = scales::percent) +
+  theme_minimal()
+
+# Calculate proportions for each combination of Is.Weekend and High.Rentals
+data_prop <- data %>%
+  group_by(TimeOfDay, High.Rentals) %>%
+  summarise(count = n()) %>%
+  mutate(prop = count / sum(count)) %>%
+  ungroup()
+
+# Plot with percentages displayed on the bars
+ggplot(data_prop, aes(x = TimeOfDay, y = prop, fill = High.Rentals)) +
+  geom_bar(stat = "identity", position = "fill") +
+  geom_text(aes(label = scales::percent(prop, accuracy = 1)), 
+            position = position_fill(vjust = 0.5), size = 3) +
+  labs(title = "Proportion of High Rentals by Time of Day", x = "TimeOfDay", y = "Proportion", fill = "High Rentals") +
+  scale_fill_discrete(labels = c("No", "Yes")) +
+  scale_y_continuous(labels = scales::percent) +
+  theme_minimal()
+
+# Calculate proportions for each combination of Is.Weekend and High.Rentals
+data_prop <- data %>%
+  group_by(Hour, High.Rentals) %>%
+  summarise(count = n()) %>%
+  mutate(prop = count / sum(count)) %>%
+  ungroup()
+
+# Plot with percentages displayed on the bars
+ggplot(data_prop, aes(x = Hour, y = prop, fill = High.Rentals)) +
+  geom_bar(stat = "identity", position = "fill") +
+  geom_text(aes(label = scales::percent(prop, accuracy = 1)), 
+            position = position_fill(vjust = 0.5), size = 3) +
+  labs(title = "Proportion of High Rentals by Hour", x = "TimeOfDay2", y = "Proportion", fill = "High Rentals") +
+  scale_fill_discrete(labels = c("No", "Yes")) +
+  scale_y_continuous(labels = scales::percent) +
+  theme_minimal()
+
 
 # CONTINOUS VARIABLES
 # Summary statistics for continuous variables by High Rentals
@@ -119,7 +209,7 @@ ggplot(data, aes(x = Humidity, fill = factor(High.Rentals))) +
 
 
 # Binomial GLM
-glm_model <- glm(High.Rentals ~ Temperature + Humidity + Seasons,
+glm_model <- glm(High.Rentals ~ Hour + Temperature + Humidity + Seasons,
                  family = binomial, data = data)
 
 # Summary of the model
@@ -166,20 +256,21 @@ ggplot(humidity_range, aes(x = Humidity, y = predicted_probability)) +
 
 # PREDICTIONS FOR SEASONS
 # Create a new data frame with different Seasons levels for prediction
-season_data <- data.frame(
-  Temperature = mean(data$Temperature, na.rm = TRUE),
-  Humidity = mean(data$Humidity, na.rm = TRUE),
-  Seasons = unique(data$Seasons)
-)
 
-# Create a new data frame with different Seasons levels for prediction
-season_data <- data.frame(
-  Temperature = mean(data$Temperature, na.rm = TRUE),
-  Humidity = mean(data$Humidity, na.rm = TRUE),
-  Seasons = unique(data$Seasons)
-)
 
-# Add predicted probabilities based on Seasons
+# Ensure Seasons is treated as a factor to avoid inconsistencies
+
+
+# Calculate mean Temperature and Humidity for each season
+season_data <- data %>%
+  group_by(Seasons) %>%
+  summarise(
+    Temperature = mean(Temperature, na.rm = TRUE),
+    Humidity = mean(Humidity, na.rm = TRUE)
+  ) %>%
+  ungroup()
+
+# Add predicted probabilities based on season-specific Temperature and Humidity means
 season_data <- season_data %>%
   mutate(predicted_probability = predict(glm_model, newdata = ., type = "response"))
 
