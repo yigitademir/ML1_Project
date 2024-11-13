@@ -1,6 +1,7 @@
 library(dplyr)
 library(ggplot2)
 
+
 data <- read.csv("SeoulBikeData.csv", fileEncoding = "CP949")
 
 # Changing the column names
@@ -61,7 +62,7 @@ data$Holiday <- relevel(data$Holiday, ref = "No Holiday")
 
 
 # linear model
-lm.data <- lm(Rented.Bike.Count ~ Temperature + Humidity + Wind.Speed + Visibility + Dew.Point.Temperature + Solar.Radiation + Rainfall + Snowfall + Holiday + Seasons + Is.Weekend + TimeOfDay1 + TimeOfDay2 , data=data)
+lm.data <- lm(Rented.Bike.Count ~ Temperature + Humidity + Wind.Speed + Visibility + Dew.Point.Temperature + Solar.Radiation + Rainfall + Snowfall + Holiday + Seasons + Is.Weekend + Weekday + TimeOfDay, data=data)
 summary(lm.data)
 
 
