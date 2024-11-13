@@ -1,7 +1,6 @@
 library(dplyr)
 library(ggplot2)
 
-
 data <- read.csv("SeoulBikeData.csv", fileEncoding = "CP949")
 
 # Changing the column names
