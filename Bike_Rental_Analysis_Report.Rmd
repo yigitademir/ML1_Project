@@ -6,6 +6,10 @@ output: pdf_document
 ---
 
 1. Introduction 
+```{r, echo = TRUE}
+
+
+```
 
 2. Data Transformation
 
