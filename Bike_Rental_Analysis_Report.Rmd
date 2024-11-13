@@ -1,0 +1,47 @@
+---
+title: "Draft"
+author: "Kasper Kuznik"
+date: "2024-11-13"
+output: pdf_document
+---
+
+1. Introduction 
+
+2. Data Transformation
+
+3. Exploratory data analysis
+
+4. Modeling 
+  a) Linear Model
+    i) Model implementation
+    ii) Result interpretation
+    ii) Cross Validation*
+
+  b) Generalised Linear Model with family set to Poisson
+    i) Model implementation
+    ii) Result interpretation
+    ii) Cross Validation*
+    
+  c) Generalised Linear Model with family set to Binomial
+    i) Model implementation
+    ii) Result interpretation
+    ii) Cross Validation*
+    
+  d) Generalised Additive Model
+    i) Model implementation
+    ii) Result interpretation
+    ii) Cross Validation*
+
+  e) Support Vector Machine (SVM)
+    i) Model implementation
+    ii) Result interpretation
+    ii) Cross Validation*
+
+  f) Neural Network
+    i) Model implementation
+    ii) Result interpretation
+    ii) Cross Validation*
+
+5. Usage of AI
+
+6. Conclusion
