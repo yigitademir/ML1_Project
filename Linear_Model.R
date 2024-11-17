@@ -1,5 +1,6 @@
 library(dplyr)
 library(ggplot2)
+library(lubridate)
 
 data <- read.csv("SeoulBikeData.csv", fileEncoding = "CP949")
 
@@ -64,26 +65,40 @@ data$Holiday <- relevel(data$Holiday, ref = "No Holiday")
 lm.data <- lm(Rented.Bike.Count ~ Temperature + Humidity + Wind.Speed + Visibility + Dew.Point.Temperature + Solar.Radiation + Rainfall + Snowfall + Holiday + Seasons + Is.Weekend + Weekday + TimeOfDay, data=data)
 summary(lm.data)
 
+lm.data.2 <- update(lm.data, .~. - Wind.Speed - Visibility - Solar.Radiation)
+summary(lm.data.2)
+#adjusted R-squared values are basically identical, simpler model should be better
 
-custom_summary <- function(lm.data) {
-  # Get the summary of the model
-  model_summary <- summary(lm.data)
-  
-  # Extract the coefficients
-  coefficients <- model_summary$coefficients
-  
-  # Format estimates as whole numbers with two decimal places
-  coefficients[, 1] <- format(round(coefficients[, 1], 2), nsmall = 2, scientific = FALSE)
-  
-  # Format p-values in scientific notation
-  coefficients[, 4] <- format(coefficients[, 4], scientific = TRUE, digits = 2)
-  
-  # Print the custom summary
-  print(coefficients)
-}
+#check effects of categorical variables
+drop1(lm.data, test = 'F')
+drop1(lm.data.2, test = 'F')
 
-# Call the custom summary function
-custom_summary(lm.data)
+#checking the model performance
+AIC(lm.data, lm.data.2)
+BIC(lm.data, lm.data.2)
+#basically the same values, simpler model should be better
+
+#comparing both models
+anova(lm.data, lm.data.2)
+#no significant difference, simpler model should be better
+
+
+"""
+We remove variables Wind.Speed, Visibility and Solar.Radiation, 
+which do not significantly contribute to the model.
+TO make the decision we compared the models using 
+analysis of variance which showed no evidence that 
+the models are different, indicating that the more 
+complex model is not better in any way. We also 
+compared the AIC and BIC values along with the
+adjusted R squared. Those values were almost identical between the models
+supporting the decision to choose the simpler model.
+
+The F-test revealed that all the categorical variables
+have an effect on the rented bike count, justifying their
+inclusion
+
+"""
 
 lm.data.0 <- lm(Rented.Bike.Count ~ 1, data = data)
 coef(lm.data.0)
@@ -91,18 +106,7 @@ lm.data.seasons <- lm(Rented.Bike.Count ~ Seasons, data = data)
 anova(lm.data.0, lm.data.seasons)
 summary(lm.data.seasons)
 
-library(multcomp)
-ph.test.1 <- glht(model = lm.data.seasons,
-                  linfct = mcp(Seasons =
-                                 c("Autumn - Spring = 0")))
-summary(ph.test.1)
 
-drop1(lm.data, test = "F")
-
-lm.data.3 <- update(lm.data, . ~ . - Visibility - Dew.Point.Temperature)
-drop1(lm.data.3, test = "F")
-
-#Boxplot Bike Count by Seasons
 ggplot(data, aes(x = Seasons, y = Rented.Bike.Count, fill = Seasons)) +
   geom_boxplot() +
   theme_minimal() +
