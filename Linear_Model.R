@@ -1,6 +1,7 @@
 library(dplyr)
 library(ggplot2)
 library(lubridate)
+library(car)
 
 data <- read.csv("SeoulBikeData.csv", fileEncoding = "CP949")
 
@@ -56,31 +57,129 @@ View(data)
 
 #--------------------------------------------------------------------------------
 
-data$Seasons <- relevel(data$Seasons, ref = "Summer")
-data$Is.Weekend <- relevel(data$Is.Weekend, ref = "Yes")
-data$Holiday <- relevel(data$Holiday, ref = "No Holiday")
+cor(data$Temperature, data$Dew.Point.Temperature)
+cor(data$Temp_Dew_Spread, data$Humidity)
+cor(data$Temperature, data$Snowfall)
 
+data$Holiday <- relevel(data$Holiday, ref = "No Holiday")
+data$TimeOfDay <- relevel(data$TimeOfDay, ref = "Morning Rush Hour")
+
+
+
+data$Temp_Dew_Spread <- data$Temperature - data$Dew.Point.Temperature
 
 # linear model
-lm.data <- lm(Rented.Bike.Count ~ Temperature + Humidity + Wind.Speed + Visibility + Dew.Point.Temperature + Solar.Radiation + Rainfall + Snowfall + Holiday + Seasons + Is.Weekend + Weekday + TimeOfDay, data=data)
+
+#We want to predict the number of bikes rented in Seoul
+#so our response variable will be Rented.Bike.Count
+
+#Since season and month are highly correlated 
+#(multicollinear), month is excluded in
+#the model. Similarly, because Is.Weekend and
+#Weekday are strongly correlated, Is.Weekend
+#is excluded in the model."
+
+#Model version 1
+
+#We include all the variables apart from those which
+#were mentioned before and dropped
+
+lm.data <- lm(Rented.Bike.Count ~ Temperature + 
+                Humidity + Wind.Speed + Visibility + 
+                Solar.Radiation + Rainfall + Snowfall + 
+                Seasons + Holiday + Weekday + TimeOfDay, 
+                data=data)
 summary(lm.data)
+
+#We check effects of categorical variables
+drop1(lm.data, test = 'F')
+
+#Since there are some variables who don't seem
+#to have any effect on the rental bike count,
+#we will check if we can fit a better model
+
+
+#We now fit another model, removing the variables
+#which do not seem to have an effect on the rental
+#bike count to see how the model performance changes.
 
 lm.data.2 <- update(lm.data, .~. - Wind.Speed - Visibility - Solar.Radiation)
 summary(lm.data.2)
-#adjusted R-squared values are basically identical, simpler model should be better
 
-#check effects of categorical variables
-drop1(lm.data, test = 'F')
+#We check effects of categorical variables
 drop1(lm.data.2, test = 'F')
 
-#checking the model performance
+#Check for multicollinearity
+vif(lm.data.2)
+
+#In the second model, the GVIF values of Temperature
+#and Seasons are just below the threshold of 5 so
+#they should be fine to keep in the model.
+
+#Comparing the two models
+
+#We want to see which model performs better in
+#predicting the rental bike count in Seoul.
+#We look at the adjusted R-squared of both and see that
+#they are almost identical at around 0.63, suggesting that
+#the simpler model is justified.
+
+
+
+#Next we check the fit of the models
 AIC(lm.data, lm.data.2)
 BIC(lm.data, lm.data.2)
-#basically the same values, simpler model should be better
 
-#comparing both models
+#The values are not very dissimilar but the second
+#model has lower values, indicating that using the
+#simpler model is justified
+
+#Finally, we compare the models with an F-test
 anova(lm.data, lm.data.2)
-#no significant difference, simpler model should be better
+
+#There is no significant difference between the two
+#models, which means we can opt for the simpler one
+
+
+#With the second model chosen for the analysis, let's
+#interpret the coefficients
+summary(lm.data.2)
+drop1(lm.data.2, test= 'F')
+
+#Intercept:
+#There is strong evidence that the mean number of rental
+#bikes on a normal working day in autumn during the
+#morning rush hour is not zero. Around 1251 bikes are
+#expected to be rented in this situation
+
+#Temperature:
+#There is strong evidence that for each increase in
+#temperature by one degree, while all other variables 
+#are kept constant, an extra 25.64 bikes will be rented.
+
+#Humidity:
+#There is strong evidence that for each increase in
+#humidity by one percentage point, while all other
+#variables are kept constant, 7.65 fewer bikes will be rented.
+
+#Rainfall:
+#There is strong evidence that for each increase in 
+#rainfall by 1 mm, while all other variables are kept
+#constant, 64.34 fewer bikes will be rented.
+
+#Snowfall:
+#There is some evidence that for each increase in
+#snowfall by 1 cm, while all other variables are kept
+#constant, 27.49 more bikes will be rented. This is
+#an unexpected result...
+
+#Seasons:
+#Comparing autumn with the rest of the seasons shows
+#that autumn is busier than all of them. Even though
+#we don't see the differences between the other seasons,
+#we see that the 
+
+
 
 
 """
