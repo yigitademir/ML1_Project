@@ -76,7 +76,7 @@ data$Temp_Dew_Spread <- data$Temperature - data$Dew.Point.Temperature
 #Since season and month are highly correlated 
 #(multicollinear), month is excluded in
 #the model. Similarly, because Is.Weekend and
-#Weekday are strongly correlated, Is.Weekend
+#Weekday are strongly correlated, Weekday
 #is excluded in the model."
 
 #Model version 1
@@ -87,7 +87,7 @@ data$Temp_Dew_Spread <- data$Temperature - data$Dew.Point.Temperature
 lm.data <- lm(Rented.Bike.Count ~ Temperature + 
                 Humidity + Wind.Speed + Visibility + 
                 Solar.Radiation + Rainfall + Snowfall + 
-                Seasons + Holiday + Weekday + TimeOfDay, 
+                Seasons + Holiday + Is.Weekend + TimeOfDay, 
                 data=data)
 summary(lm.data)
 
@@ -130,9 +130,9 @@ vif(lm.data.2)
 AIC(lm.data, lm.data.2)
 BIC(lm.data, lm.data.2)
 
-#The values are not very dissimilar but the second
-#model has lower values, indicating that using the
-#simpler model is justified
+#The AIC values are very similar but the second
+#model has a lower BIC value, indicating that the
+#simpler model is a better fit
 
 #Finally, we compare the models with an F-test
 anova(lm.data, lm.data.2)
@@ -149,35 +149,68 @@ drop1(lm.data.2, test= 'F')
 #Intercept:
 #There is strong evidence that the mean number of rental
 #bikes on a normal working day in autumn during the
-#morning rush hour is not zero. Around 1251 bikes are
-#expected to be rented in this situation
+#morning rush hour is not zero. Around 1233 bikes are
+#expected to be rented in this situation.
 
 #Temperature:
 #There is strong evidence that for each increase in
 #temperature by one degree, while all other variables 
-#are kept constant, an extra 25.64 bikes will be rented.
+#are kept constant, an extra 25.62 bikes will be rented.
 
 #Humidity:
 #There is strong evidence that for each increase in
 #humidity by one percentage point, while all other
-#variables are kept constant, 7.65 fewer bikes will be rented.
+#variables are kept constant, 7.7 fewer bikes will
+#be rented.
 
 #Rainfall:
 #There is strong evidence that for each increase in 
 #rainfall by 1 mm, while all other variables are kept
-#constant, 64.34 fewer bikes will be rented.
+#constant, 64.62 fewer bikes will be rented.
 
 #Snowfall:
 #There is some evidence that for each increase in
 #snowfall by 1 cm, while all other variables are kept
-#constant, 27.49 more bikes will be rented. This is
-#an unexpected result...
+#constant, 28.54 more bikes will be rented.
+#This is an unexpected result...
+
+#We now interpret the coefficients of categorical
+#variables, it is important to note that the observed
+#values are all in comparison to the reference
+#level of each variable but not between each other.
+#In the next section we will compare the categorical
+#variables Seasons and TimeOfDay between each level.
 
 #Seasons:
-#Comparing autumn with the rest of the seasons shows
-#that autumn is busier than all of them. Even though
-#we don't see the differences between the other seasons,
-#we see that the 
+#There is strong evidence that for a spring day where
+#other variables are kept constant, 154.74 fewer bikes
+#will be rented than in autumn. For a summer
+#day, a decrease of 164.2 bikes is expected and for a
+#winter day, a decrease of 356.07 bikes is expected
+#compared to autumn.
+
+#Holiday:
+#There is strong evidence that on a public holiday,
+#while all other variables are kept constant, 126.56
+#fewer bikes will be rented than on a normal day.
+
+#Is.Weekend:
+#There is strong evidence that on a weekend, while all
+#other variables are kept constant, 84.62 fewer bikes
+#will be rented.
+
+#TimeOfDay:
+#There is strong evidence that during mid-day, if all
+#other variables are kept constant, 351.16 fewer bikes
+#will be rented compared to the morning rush hour.
+#Similarly, in the afternoon, a decrease of 159.57
+#rented bikes is expected. In the evening rush hour,
+#an increase of 406 bikes is expected compared to the
+#morning rush hour and in the evening, there is an
+#increase of 159.48 bikes. In the early and late night,
+#the decrease compared to the morning rush hour is 248.54
+#and 530.01 bikes respectively,
+
 
 
 
