@@ -57,21 +57,18 @@ View(data)
 
 #--------------------------------------------------------------------------------
 
-cor(data$Temperature, data$Dew.Point.Temperature)
-cor(data$Temp_Dew_Spread, data$Humidity)
-cor(data$Temperature, data$Snowfall)
-
 data$Holiday <- relevel(data$Holiday, ref = "No Holiday")
 data$TimeOfDay <- relevel(data$TimeOfDay, ref = "Morning Rush Hour")
 
 
-
-data$Temp_Dew_Spread <- data$Temperature - data$Dew.Point.Temperature
-
-# linear model
-
-#We want to predict the number of bikes rented in Seoul
-#so our response variable will be Rented.Bike.Count
+#We want to predict the number of bikes rented in Seoul.
+#Logically, our response variable should be Rented.Bike.Count.
+#However, as that is a count variable, it is not ideal for a
+#standard linear model. Thus, our response variable for the
+#first model will be temperature, a continuous variable.
+#Afterwards, for the purpose of our analysis we will
+#transform Rented.Bike.count with the square-root function to
+#make it more suitable to be a response variable as count data.
 
 #Since season and month are highly correlated 
 #(multicollinear), month is excluded in
@@ -79,20 +76,47 @@ data$Temp_Dew_Spread <- data$Temperature - data$Dew.Point.Temperature
 #Weekday are strongly correlated, Weekday
 #is excluded in the model."
 
+#1. Temperature using temperature as response variable
+
+
+lm.temp <- lm(Temperature ~ Rented.Bike.Count + 
+                Humidity + Wind.Speed + Visibility + 
+                Solar.Radiation + Rainfall + Snowfall + 
+                Seasons + Holiday + Is.Weekend + TimeOfDay, 
+              data=data)
+summary(lm.temp)
+
+#As the interpretation of coefficients of this model doesn't
+#bring much value to our analysis, we will only briefly look
+#at the model's results. It seems like situational weather
+#factors have an effect on the temperature in Seoul, such as
+#humidity, wind speed and snowfall. The time of day and
+#season also seem to be important as there is strong evidence
+#that the temperatures for each season and time of day differ to the
+#references (autumn for seasons and morning rush hour for
+#time of day).
+
+#We will now use the square root of Rented.Bike.Count as our
+#response variable.
+
+
+#2. linear model
+
 #Model version 1
 
 #We include all the variables apart from those which
 #were mentioned before and dropped
 
-lm.data <- lm(Rented.Bike.Count ~ Temperature + 
+lm.bikes <- lm(sqrt(Rented.Bike.Count) ~ Temperature + 
                 Humidity + Wind.Speed + Visibility + 
                 Solar.Radiation + Rainfall + Snowfall + 
                 Seasons + Holiday + Is.Weekend + TimeOfDay, 
-                data=data)
-summary(lm.data)
+              data=data)
+summary(lm.bikes)
+
 
 #We check effects of categorical variables
-drop1(lm.data, test = 'F')
+drop1(lm.bikes, test = 'F')
 
 #Since there are some variables who don't seem
 #to have any effect on the rental bike count,
@@ -103,14 +127,16 @@ drop1(lm.data, test = 'F')
 #which do not seem to have an effect on the rental
 #bike count to see how the model performance changes.
 
-lm.data.2 <- update(lm.data, .~. - Wind.Speed - Visibility - Solar.Radiation)
-summary(lm.data.2)
+#model version 2
+
+lm.bikes.2 <- update(lm.bikes, .~. - Wind.Speed - Visibility - Solar.Radiation - Snowfall)
+summary(lm.bikes.2)
 
 #We check effects of categorical variables
-drop1(lm.data.2, test = 'F')
+drop1(lm.bikes.2, test = 'F')
 
 #Check for multicollinearity
-vif(lm.data.2)
+vif(lm.bikes.2)
 
 #In the second model, the GVIF values of Temperature
 #and Seasons are just below the threshold of 5 so
@@ -121,21 +147,20 @@ vif(lm.data.2)
 #We want to see which model performs better in
 #predicting the rental bike count in Seoul.
 #We look at the adjusted R-squared of both and see that
-#they are almost identical at around 0.63, suggesting that
+#they are almost identical at around 0.704, suggesting that
 #the simpler model is justified.
 
 
-
 #Next we check the fit of the models
-AIC(lm.data, lm.data.2)
-BIC(lm.data, lm.data.2)
+AIC(lm.bikes, lm.bikes.2)
+BIC(lm.bikes, lm.bikes.2)
 
 #The AIC values are very similar but the second
 #model has a lower BIC value, indicating that the
 #simpler model is a better fit
 
 #Finally, we compare the models with an F-test
-anova(lm.data, lm.data.2)
+anova(lm.bikes, lm.bikes.2)
 
 #There is no significant difference between the two
 #models, which means we can opt for the simpler one
@@ -143,36 +168,40 @@ anova(lm.data, lm.data.2)
 
 #With the second model chosen for the analysis, let's
 #interpret the coefficients
-summary(lm.data.2)
-drop1(lm.data.2, test= 'F')
+summary(lm.bikes.2)
+drop1(lm.bikes.2, test= 'F')
+
+
+#As the model was fitted to the square root of rented bikes,
+#the coefficients of predictor variables estimate the change
+#in the square root of rented bikes, not the direct number of
+#bikes rented. To interpret the effect on the actual number
+#of bikes rented, we need to square the predicted value
+#(sum of the intercept and the coefficient). The difference
+#between this squared value and the square of the intercept
+#gives the predicted change in rented bikes due to a variable.
 
 #Intercept:
 #There is strong evidence that the mean number of rental
 #bikes on a normal working day in autumn during the
-#morning rush hour is not zero. Around 1233 bikes are
+#morning rush hour is not zero. Around 1267 bikes are
 #expected to be rented in this situation.
 
 #Temperature:
 #There is strong evidence that for each increase in
 #temperature by one degree, while all other variables 
-#are kept constant, an extra 25.62 bikes will be rented.
+#are kept constant, an extra 34 bikes will be rented.
 
 #Humidity:
 #There is strong evidence that for each increase in
 #humidity by one percentage point, while all other
-#variables are kept constant, 7.7 fewer bikes will
+#variables are kept constant, 11 fewer bikes will
 #be rented.
 
 #Rainfall:
 #There is strong evidence that for each increase in 
 #rainfall by 1 mm, while all other variables are kept
-#constant, 64.62 fewer bikes will be rented.
-
-#Snowfall:
-#There is some evidence that for each increase in
-#snowfall by 1 cm, while all other variables are kept
-#constant, 28.54 more bikes will be rented.
-#This is an unexpected result...
+#constant, 117 fewer bikes will be rented.
 
 #We now interpret the coefficients of categorical
 #variables, it is important to note that the observed
@@ -183,33 +212,47 @@ drop1(lm.data.2, test= 'F')
 
 #Seasons:
 #There is strong evidence that for a spring day where
-#other variables are kept constant, 154.74 fewer bikes
+#other variables are kept constant, 226 fewer bikes
 #will be rented than in autumn. For a summer
-#day, a decrease of 164.2 bikes is expected and for a
-#winter day, a decrease of 356.07 bikes is expected
-#compared to autumn.
+#day, a decrease of 221 bikes is expected and for a
+#winter day, a big decrease of 502 bikes is expected
+#compared to autumn. Autumn coming out on top compared
+#to the other seasons might be down to reasons like
+#mild weather often associated with autumn and people
+#getting back into rhythm after the summer holidays.
+
 
 #Holiday:
 #There is strong evidence that on a public holiday,
-#while all other variables are kept constant, 126.56
+#while all other variables are kept constant, 203
 #fewer bikes will be rented than on a normal day.
+#This suggests that people use the rental bikes more
+#as a means of transport, i.e. to get to and from school
+#or work, rather than for leisure when they have free time.
+
 
 #Is.Weekend:
 #There is strong evidence that on a weekend, while all
-#other variables are kept constant, 84.62 fewer bikes
-#will be rented.
+#other variables are kept constant, 113 fewer bikes
+#will be rented. Similar to public holidays, weekends
+#where more people have free time don't seem to increase
+#people's needs for rental bikes.
 
 #TimeOfDay:
 #There is strong evidence that during mid-day, if all
-#other variables are kept constant, 351.16 fewer bikes
+#other variables are kept constant, 384 fewer bikes
 #will be rented compared to the morning rush hour.
-#Similarly, in the afternoon, a decrease of 159.57
+#Similarly, in the afternoon, a decrease of 217
 #rented bikes is expected. In the evening rush hour,
-#an increase of 406 bikes is expected compared to the
+#an increase of 364 bikes is expected compared to the
 #morning rush hour and in the evening, there is an
-#increase of 159.48 bikes. In the early and late night,
-#the decrease compared to the morning rush hour is 248.54
-#and 530.01 bikes respectively,
+#increase of 146 bikes. In the early and late night,
+#the decrease compared to the morning rush hour is 282
+#and 681 bikes respectively,
+#The busiest times for rented bikes seem to be the two rush
+#hours and the evening. Between the rush hours there is a
+#dip in the rental activity and unsurprisingly, during the
+#night it plummets.
 
 
 
