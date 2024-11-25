@@ -255,7 +255,8 @@ drop1(lm.bikes.2, test= 'F')
 #night it plummets.
 
 
-
+#We check the difference between all levels of seasons and
+#time of day
 
 
 """
