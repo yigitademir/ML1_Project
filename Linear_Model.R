@@ -2,6 +2,7 @@ library(dplyr)
 library(ggplot2)
 library(lubridate)
 library(car)
+library(multcomp)
 
 data <- read.csv("SeoulBikeData.csv", fileEncoding = "CP949")
 
@@ -258,6 +259,22 @@ drop1(lm.bikes.2, test= 'F')
 #We check the difference between all levels of seasons and
 #time of day
 
+seasonal.differences <- glht(lm.bikes.2,
+                     linfct = mcp(Seasons = "Tukey"))
+summary(seasonal.differences)
+
+ToD.differences <- glht(lm.bikes.2,
+                     linfct = mcp(TimeOfDay = "Tukey"))
+summary(ToD.differences)
+
+#There is strong evidence that no two levels of the time
+#of day variable have the same effect on the number of
+#rented bikes. For seasons, the same situation is seen
+#except that there is no evidence that summer and spring
+#have different effects on the number of rented bikes.
+
+#Valtýr Már Michaelsson took the lead on the linear model.
+
 
 """
 We remove variables Wind.Speed, Visibility and Solar.Radiation, 
@@ -335,3 +352,6 @@ ggplot(data_long, aes(x = Value, y = Rented.Bike.Count)) +
   labs(title = "Rented Bike Count vs Various Weather Conditions",
        x = "Weather Conditions",
        y = "Rented Bike Count")
+
+
+
