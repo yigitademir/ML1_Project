@@ -61,25 +61,29 @@ View(data)
 data$Holiday <- relevel(data$Holiday, ref = "No Holiday")
 data$TimeOfDay <- relevel(data$TimeOfDay, ref = "Morning Rush Hour")
 
+#We want to predict the number of bikes rented in Seoul,
+#looking at several different variables. Logically, our
+#response variable should be Rented.Bike.Count. However,
+#as that is a count variable, it is not ideal for a standard
+#linear model. As the only two continuous variables in our
+#data set measure temperatures, fitting a linear model with
+#either as the response variable would not be valuable to our
+#analysis. Thus, we will transform Rented.Bike.Count with
+#the square-root function to make it more suitable as a
+#response variable for linear regression.
 
-#We want to predict the number of bikes rented in Seoul.
-#Logically, our response variable should be Rented.Bike.Count.
-#However, as that is a count variable, it is not ideal for a
-#standard linear model. Thus, our response variable for the
-#first model will be temperature, a continuous variable.
-#Afterwards, for the purpose of our analysis we will
-#transform Rented.Bike.count with the square-root function to
-#make it more suitable to be a response variable as count data.
 
-#Since season and month are highly correlated 
-#(multicollinear), month is excluded in
-#the model. Similarly, because Is.Weekend and
-#Weekday are strongly correlated, Weekday
-#is excluded in the model."
+
+#Since season and month are highly correlated, 
+#month is excluded in the model. Similarly,
+#because Is.Weekend and Weekday are strongly
+#correlated, Weekday is excluded in the model.
+#The same goes for temperature and dew.point.temperature,
+#dew.point.temperature is excluded in the model.
 
 #1. Temperature using temperature as response variable
 
-
+#Probably going to take this out:
 lm.temp <- lm(Temperature ~ Rented.Bike.Count + 
                 Humidity + Wind.Speed + Visibility + 
                 Solar.Radiation + Rainfall + Snowfall + 
