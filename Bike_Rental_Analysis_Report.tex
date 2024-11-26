@@ -1,0 +1,141 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={Draft},
+  pdfauthor={Kasper Kuznik},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\title{Draft}
+\author{Kasper Kuznik}
+\date{2024-11-13}
+
+\begin{document}
+\maketitle
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  Introduction The rapid urbanisation of recent decades has seen cities
+  face challenges such as traffic congestion, air pollution, and limited
+  parking spaces. In the face of these issues, rental bike systems have
+  gained significant popularity, offering a cheap and eco-friendly
+  alternative to more traditional commuting methods. Rental bikes
+  provide a practical solution for short-distance travel, be it for
+  students going to school, office workers heading to the workplace and
+  even tourists exploring a city. In addition to promoting an active
+  lifestyle, they eliminate the hassle of bike ownership, such as
+  storage and maintenance. The growing demand of rental bike companies
+  is reflected in the global market value of bike rentals, projected to
+  reach a value of \$11.3 billion in 2031, marking a 538\% increase from
+  the 2021 market value of \$2.1 billion (Allied Market Research, 2021).
+  The biggest challenge rental bike companies face is ensuring constant
+  availability of bikes, as demand can fluctuate due to numerous
+  reasons. Bikes must be readily accessible to users at all times,
+  making it essential for company leaders to be aware of peak hours, the
+  impact of weather conditions and high-demand areas. In this project,
+  we will use various machine learning models to predict the number of
+  rented bikes required to meet customer demand under different
+  circumstances. The goal is to assist a fictional bike rental company
+  operating in Seoul, South Korea, in planning the optimal size of their
+  bike fleet.
+\item
+  Data Transformation
+\item
+  Exploratory data analysis
+\item
+  Modeling
+\end{enumerate}
+
+\begin{enumerate}
+\def\labelenumi{\alph{enumi})}
+\item
+  Linear Model i) Model implementation ii) Result interpretation ii)
+  Cross Validation*
+\item
+  Generalised Linear Model with family set to Poisson i) Model
+  implementation ii) Result interpretation ii) Cross Validation*
+\item
+  Generalised Linear Model with family set to Binomial i) Model
+  implementation ii) Result interpretation ii) Cross Validation*
+\item
+  Generalised Additive Model i) Model implementation ii) Result
+  interpretation ii) Cross Validation*
+\item
+  Support Vector Machine (SVM) i) Model implementation ii) Result
+  interpretation ii) Cross Validation*
+\item
+  Neural Network i) Model implementation ii) Result interpretation ii)
+  Cross Validation*
+\end{enumerate}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{4}
+\item
+  Usage of AI
+\item
+  Conclusion
+\end{enumerate}
+
+\end{document}
