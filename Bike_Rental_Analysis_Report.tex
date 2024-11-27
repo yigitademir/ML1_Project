@@ -98,17 +98,31 @@ circumstances, trying to figure out which of them performs best. The
 goal is to assist a fictional bike rental company operating in Seoul,
 South Korea, in planning the optimal size of their bike fleet.
 
-\section{Dataset „Seoul Bike Sharing
-Demand``}\label{dataset-seoul-bike-sharing-demand}
+\section{Dataset}\label{dataset}
 
-To conduct our analysis, we will use a dataset which contains the count
-of public bicycles rented per hour in the Seoul Bike Sharing System with
-corresponding weather data and holiday information, collected between
-2017 and 2018 (UCI Machine Learning Repository, 2020). We will enrich
-the dataset by adding columns that capture different times-related
-factors, such as whether a given day is a working day or a weekend.
-Additionally, we will categorise hours into specific periods to better
-capture daily trends in bike demand.
+To conduct our analysis, we will use a dataset called „Seoul Bike
+Sharing Demand`` which contains the count of public bicycles rented per
+hour in the Seoul Bike Sharing System with corresponding weather data
+and holiday information, collected between 2017 and 2018 (UCI Machine
+Learning Repository, 2020). We will enrich the dataset by adding columns
+that capture different times-related factors, such as whether a given
+day is a working day or a weekend. Additionally, we will categorise
+hours into specific periods to better capture daily trends in bike
+demand.
+
+\section{Structure}\label{structure}
+
+We will begin by examining the dataset and outlining the specific
+changes we made for the purpose of our analysis. Next, we will perform
+exploratory data analysis, focussing on correlations between variables
+to address potential multicollinearity issues. In the following
+chapters, we will fit different machine learning models to the data and
+use their results to predict the number of rental bikes needed in Seoul.
+The sequence of the models will be as follows: a linear model, a
+generalised linear model with a Poisson family, another with a Binomial
+family, a generalised additive model, a neural network and a support
+vector machine. Finally, we will compare these models to identify the
+best solution for our bike rental company.
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
