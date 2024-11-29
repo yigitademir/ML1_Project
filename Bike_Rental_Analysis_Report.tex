@@ -61,13 +61,13 @@
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
 \urlstyle{same}
 \hypersetup{
-  pdftitle={Draft},
-  pdfauthor={Kasper Kuznik},
+  pdftitle={Get on your bike},
+  pdfauthor={Kuznik et al.},
   hidelinks,
   pdfcreator={LaTeX via pandoc}}
 
-\title{Draft}
-\author{Kasper Kuznik}
+\title{Get on your bike}
+\author{Kuznik et al.}
 \date{2024-11-13}
 
 \begin{document}
@@ -124,11 +124,31 @@ family, a generalised additive model, a neural network and a support
 vector machine. Finally, we will compare these models to identify the
 best solution for our bike rental company.
 
+\section{2. Data Transformation}\label{data-transformation}
+
+The raw dataset was unsuitable for analysis and therefore required
+transformation. Seeing as the column names were unnecessarily complex
+and inconsistent, the first step was renaming them for simplicity.
+``Temperature.캜.'' was changed to ``Temperature'', ``Humidity\ldots{}''
+to ``Humidity'', ``Visibility..10m.'' to ``Visibility'' and so forth. In
+the categorical variable ``Functioning.Day'', which indicated whether a
+given day was functioning for bike rentals, non-functioning days were
+removed as the number of rented bikes was obviously zero on those days.
+The column was subsequently dropped since its remaining values were
+identical, making it redundant. Next, time-related features were added
+to capture their potential impact on rented bikes. ``Month'' and
+``Weekday'' columns were created to indicate the month and day of the
+week, followed by an ``Is.Weekend'' column to classify days as working
+days or weekends. To catch meaningful variations within a single day,
+the ``Hours'' column was grouped into segments such as morning rush
+hour, evening rush hour and late night. These segments were stored in a
+new variable ``TimeOfDay''. Finally, all categorical variables were
+converted to factor data types, completing the preparation of the
+dataset for analysis.
+
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
-\setcounter{enumi}{1}
-\item
-  Data Transformation
+\setcounter{enumi}{2}
 \item
   Exploratory data analysis
 \item
