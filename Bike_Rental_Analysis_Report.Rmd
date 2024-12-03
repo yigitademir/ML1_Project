@@ -96,7 +96,42 @@ There is strong evidence that the mean number of rental bikes on a normal workin
 #Temperature:
 There is strong evidence that for each increase in temperature by one degree, while all other variables are kept constant, an extra 34 bikes will be rented.
 
+#Humidity:
+There is strong evidence that for each increase in humidity by one percentage point, while all other variables are kept constant, 11 fewer bikes will be rented.
 
+
+#Rainfall:
+There is strong evidence that for each increase in rainfall by 1 mm, while all other variables are kept constant, 117 fewer bikes will be rented.
+
+We now interpret the coefficients of categorical variables, it is important to note that the observed values are all in comparison to the reference level of each variable but not between each other. In the next section we will compare the categorical variables Seasons and TimeOfDay between each level.
+
+#Seasons:
+There is strong evidence that for a spring day where other variables are kept constant, 226 fewer bikes will be rented than in autumn. For a summer day, a decrease of 221 bikes is expected and for a winter day, a big decrease of 502 bikes is expected compared to autumn. Autumn coming out on top compared to the other seasons might be down to reasons like mild weather often associated with autumn and people getting back into rhythm after the summer holidays.
+
+#Holiday:
+There is strong evidence that on a public holiday, while all other variables are kept constant, 203 fewer bikes will be rented than on a normal day. This suggests that people use the rental bikes more as a means of transport, i.e. to get to and from school or work, rather than for leisure when they have free time.
+
+#Is.Weekend:
+There is strong evidence that on a weekend, while all other variables are kept constant, 113 fewer bikes will be rented. Similar to public holidays, weekends where more people have free time don't seem to increase people's needs for rental bikes.
+
+#TimeOfDay:
+There is strong evidence that during mid-day, if all other variables are kept constant, 384 fewer bikes will be rented compared to the morning rush hour. Similarly, in the afternoon, a decrease of 217 rented bikes is expected. In the evening rush hour, an increase of 364 bikes is expected compared to the morning rush hour and in the evening, there is an increase of 146 bikes. In the early and late night, the decrease compared to the morning rush hour is 282 and 681 bikes respectively. The busiest times for rented bikes seem to be the two rush hours and the evening. Between the rush hours there is a dip in the rental activity and unsurprisingly, during the night it plummets.
+
+We now check the difference between all levels of seasons and time of day.
+
+```{r}
+seasonal.differences <- glht(lm.bikes.2,
+                     linfct = mcp(Seasons = "Tukey"))
+summary(seasonal.differences)
+
+ToD.differences <- glht(lm.bikes.2,
+                     linfct = mcp(TimeOfDay = "Tukey"))
+summary(ToD.differences)
+```
+
+There is strong evidence that no two levels of the time of day variable have the same effect on the number of rented bikes. For seasons, the same situation is seen except that there is no evidence that summer and spring have different effects on the number of rented bikes.
+
+Valtýr Már Michaelsson took the lead on the linear model.
 
     i) Model implementation
     ii) Result interpretation
