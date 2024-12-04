@@ -214,3 +214,27 @@ glm_model <- glm(High.Rentals ~ Hour + Temperature + Humidity + Seasons,
 
 # Summary of the model
 summary(glm_model)
+
+# Predict probabilities
+data$Predicted_Prob <- predict(glm_model, type = "response")
+
+# Convert probabilities to binary classes (threshold = 0.5)
+data$Predicted_Class <- ifelse(data$Predicted_Prob > 0.5, 1, 0)
+
+# Create confusion matrix
+confusion_matrix <- table(Predicted = data$Predicted_Class, Actual = data$High.Rentals)
+
+# Print confusion matrix
+print(confusion_matrix)
+
+# Evaluate metrics
+accuracy <- sum(diag(confusion_matrix)) / sum(confusion_matrix)
+precision <- confusion_matrix[2, 2] / sum(confusion_matrix[2, ])
+recall <- confusion_matrix[2, 2] / sum(confusion_matrix[, 2])
+f1_score <- 2 * ((precision * recall) / (precision + recall))
+
+# Print performance metrics
+cat("Accuracy: ", accuracy, "\n")
+cat("Precision: ", precision, "\n")
+cat("Recall: ", recall, "\n")
+cat("F1 Score: ", f1_score, "\n")
