@@ -84,6 +84,23 @@ ggplot(data_prop, aes(x = Seasons, y = prop, fill = High.Rentals)) +
 
 # Calculate proportions for each combination of Is.Weekend and High.Rentals
 data_prop <- data %>%
+  group_by(Month, High.Rentals) %>%
+  summarise(count = n()) %>%
+  mutate(prop = count / sum(count)) %>%
+  ungroup()
+
+# Plot with percentages displayed on the bars
+ggplot(data_prop, aes(x = Month, y = prop, fill = High.Rentals)) +
+  geom_bar(stat = "identity", position = "fill") +
+  geom_text(aes(label = scales::percent(prop, accuracy = 1)), 
+            position = position_fill(vjust = 0.5), size = 3) +
+  labs(title = "Proportion of High Rentals by Months", x = "Months", y = "Proportion", fill = "High Rentals") +
+  scale_fill_discrete(labels = c("No", "Yes")) +
+  scale_y_continuous(labels = scales::percent) +
+  theme_minimal()
+
+# Calculate proportions for each combination of Is.Weekend and High.Rentals
+data_prop <- data %>%
   group_by(Is.Weekend, High.Rentals) %>%
   summarise(count = n()) %>%
   mutate(prop = count / sum(count)) %>%
@@ -112,23 +129,6 @@ ggplot(data_prop, aes(x = Weekday, y = prop, fill = High.Rentals)) +
   geom_text(aes(label = scales::percent(prop, accuracy = 1)), 
             position = position_fill(vjust = 0.5), size = 3) +
   labs(title = "Proportion of High Rentals by Weekday", x = "Weekday", y = "Proportion", fill = "High Rentals") +
-  scale_fill_discrete(labels = c("No", "Yes")) +
-  scale_y_continuous(labels = scales::percent) +
-  theme_minimal()
-
-# Calculate proportions for each combination of Is.Weekend and High.Rentals
-data_prop <- data %>%
-  group_by(Month, High.Rentals) %>%
-  summarise(count = n()) %>%
-  mutate(prop = count / sum(count)) %>%
-  ungroup()
-
-# Plot with percentages displayed on the bars
-ggplot(data_prop, aes(x = Month, y = prop, fill = High.Rentals)) +
-  geom_bar(stat = "identity", position = "fill") +
-  geom_text(aes(label = scales::percent(prop, accuracy = 1)), 
-            position = position_fill(vjust = 0.5), size = 3) +
-  labs(title = "Proportion of High Rentals by Months", x = "Months", y = "Proportion", fill = "High Rentals") +
   scale_fill_discrete(labels = c("No", "Yes")) +
   scale_y_continuous(labels = scales::percent) +
   theme_minimal()
@@ -194,14 +194,14 @@ ggplot(data, aes(x = Temperature, fill = High.Rentals)) +
   theme_minimal()
 
 # Box plot for Humiditiy by High Rentals
-ggplot(data, aes(x = High.Rentals, y = Temperature)) +
+ggplot(data, aes(x = High.Rentals, y = Humidity)) +
   geom_boxplot() +
   labs(title = "Humidity vs. High Rentals", x = "High Rentals", y = "Humidity (%)") +
   scale_x_discrete(labels = c("0" = "Low", "1" = "High")) +
   theme_minimal()
 
 # Density plot for Humidity
-ggplot(data, aes(x = Humidity, fill = factor(High.Rentals))) +
+ggplot(data, aes(x = Humidity, fill = High.Rentals)) +
   geom_density(alpha = 0.5) +
   labs(title = "Humidity Distribution for High and Low Rentals", x = "Humidity (%)", y = "Density") +
   scale_fill_manual(name = "High Rentals", values = c("0" = "red", "1" = "blue")) +
@@ -214,73 +214,3 @@ glm_model <- glm(High.Rentals ~ Hour + Temperature + Humidity + Seasons,
 
 # Summary of the model
 summary(glm_model)
-
-
-# PREDICTIONS FOR CONTINIOUS VARIABLES
-# Create a new data frame with a range of Temperature values for prediction
-temperature_range <- data.frame(
-  Temperature = seq(min(data$Temperature), max(data$Temperature), length.out = 100),
-  Humidity = mean(data$Humidity, na.rm = TRUE),
-  Seasons = "Spring" # Set Seasons to a fixed level for visualization
-)
-
-# Add predicted probabilities based on Temperature
-temperature_range <- temperature_range %>%
-  mutate(predicted_probability = predict(glm_model, newdata = ., type = "response"))
-
-# Plot predicted probabilities vs. Temperature
-ggplot(temperature_range, aes(x = Temperature, y = predicted_probability)) +
-  geom_line(color = "blue") +
-  labs(title = "Predicted Probability of High Rentals vs. Temperature",
-       x = "Temperature (°C)", y = "Predicted Probability of High Rentals") +
-  theme_minimal()
-
-# Create a new data frame with a range of Humidity values for prediction
-humidity_range <- data.frame(
-  Temperature = mean(data$Temperature, na.rm = TRUE),
-  Humidity = seq(min(data$Humidity), max(data$Humidity), length.out = 100),
-  Seasons = "Spring"
-)
-
-# Add predicted probabilities based on Humidity
-humidity_range <- humidity_range %>%
-  mutate(predicted_probability = predict(glm_model, newdata = ., type = "response"))
-
-# Plot predicted probabilities vs. Humidity
-ggplot(humidity_range, aes(x = Humidity, y = predicted_probability)) +
-  geom_line(color = "blue") +
-  labs(title = "Predicted Probability of High Rentals vs. Humidity",
-       x = "Humidity (%)", y = "Predicted Probability of High Rentals") +
-  theme_minimal()
-
-
-# PREDICTIONS FOR SEASONS
-# Create a new data frame with different Seasons levels for prediction
-
-
-# Ensure Seasons is treated as a factor to avoid inconsistencies
-
-
-# Calculate mean Temperature and Humidity for each season
-season_data <- data %>%
-  group_by(Seasons) %>%
-  summarise(
-    Temperature = mean(Temperature, na.rm = TRUE),
-    Humidity = mean(Humidity, na.rm = TRUE)
-  ) %>%
-  ungroup()
-
-# Add predicted probabilities based on season-specific Temperature and Humidity means
-season_data <- season_data %>%
-  mutate(predicted_probability = predict(glm_model, newdata = ., type = "response"))
-
-# Plot predicted probabilities by Seasons
-ggplot(season_data, aes(x = Seasons, y = predicted_probability, fill = Seasons)) +
-  geom_bar(stat = "identity") +
-  labs(title = "Predicted Probability of High Rentals by Season",
-       x = "Season", y = "Predicted Probability of High Rentals") +
-  theme_minimal() +
-  scale_fill_brewer(palette = "Set2")
-
-
-
