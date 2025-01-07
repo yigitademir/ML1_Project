@@ -258,14 +258,14 @@ To check the effects of categorical variables on the response variable, we use t
 ```{r}
 drop1(lm.bikes, test = 'F')
 ```
-Since there are some variables who don't seem to have any effect on the rental bike count, we will check if we can fit a better model.In the second version of the model, we remove the variables Wind.Speed, Visibility, Solar.Radiation and Snowfall to see how the model performance changes.
+Since there are some variables which don't seem to have any effect on the rental bike count, we will check if we can fit a better model.In the second version of the model, we remove the variables Wind.Speed, Visibility, Solar.Radiation and Snowfall to see how the model performance changes.
 
 ```{r}
 lm.bikes.2 <- update(lm.bikes, .~. - Wind.Speed - Visibility - Solar.Radiation - Snowfall)
 summary(lm.bikes.2)
 ```
 
-Like with the first version we use the drop1 function to check the effects of categorical variables on the rental bike count.
+Like in the first version we use the drop1 function to check the effects of categorical variables on the rental bike count.
 
 ```{r}
 drop1(lm.bikes.2, test = 'F')
@@ -297,7 +297,7 @@ summary(lm.bikes.2)
 drop1(lm.bikes.2, test= 'F')
 ```
 
-As the model was fitted to the square root of rented bikes, the coefficients of predictor variables estimate the change in the square root of rented bikes, not the direct number of bikes rented. To interpret the effect on the actual number of bikes rented, we need to square the predicted value (sum of the intercept and the coefficient). The difference between this squared value and the square of the intercept gives the predicted change in rented bikes due to a variable.
+As the model was fitted to the square root of rented bikes, the coefficients of predictor variables estimate the change in the square root of rented bikes, not the direct number of bikes rented. To interpret the effect on the actual number of bikes rented, we need to square the predicted value (sum of the intercept and the coefficient). The difference between this squared value and the square of the intercept gives the predicted change in rented bikes due to a given variable. In the following interpretations, these calculations will already have been performed.
 
 #Intercept:
 There is strong evidence that the mean number of rental bikes on a normal working day in autumn during the morning rush hour is not zero. Around 1267 bikes are expected to be rented in this situation.
